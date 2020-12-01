@@ -179,6 +179,8 @@ string SchedulingSystem::getRunningProcessName() const
 {
   // implement this for task 1, if the cpu is not idle you need to look up
   // the name from the process table
+  if (cpu != IDLE)
+    return process[cpu].name;
   return "IDLE";
 }
 
@@ -211,6 +213,11 @@ bool SchedulingSystem::allProcessesDone() const
   // You need to check and see if any process is still not done,
   // if you find a process that is not done, you need to return
   // false, otherwise you should return true.
+  for (int i = 0; i < numProcesses; i++)
+  {
+    if (!process[i].done)
+      return false;
+  }
   return true;
 }
 
@@ -538,6 +545,12 @@ void SchedulingSystem::dispatchCpuIfIdle()
   // have never run have their startTime initialized to
   // NOT_STARTED, which is how you can tell if this is their first
   // time running or not.
+  if (isCpuIdle())
+  {
+    cpu = policy->dispatch();
+    if (process[cpu].startTime != NOT_STARTED)
+      process[cpu].startTime = getSystemTime();
+  }
 }
 
 /**
