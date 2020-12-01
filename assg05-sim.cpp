@@ -12,10 +12,10 @@
 #include "SchedulingSystem.hpp"
 #include "SimulatorException.hpp"
 #include "FCFSSchedulingPolicy.hpp"
+#include "SPNSchedulingPolicy.hpp"
 #include <iostream>
 #include <string>
 using namespace std;
-
 
 /**
  * @brief usage
@@ -34,7 +34,8 @@ void usage()
        << "  policy.  Simulation is run until all processes are finished." << endl
        << "  Final data are displayed about the scheduling history" << endl
        << "  of which process ran at each time step, and the statistics " << endl
-       << "  of the performance of the scheduling policy." << endl << endl
+       << "  of the performance of the scheduling policy." << endl
+       << endl
        << "Options:" << endl
        << "  policy       The page job scheduling policy to use, current" << endl
        << "               'FCFS', 'RR', 'SPN' are valid and supported" << endl
@@ -45,7 +46,6 @@ void usage()
        << "               that perform round-robin time slicing" << endl;
   exit(1);
 }
-
 
 /**
  * @brief main entry point
@@ -66,12 +66,12 @@ void usage()
  *   or exceptions.  A non-zero value is returned when an exception occurs
  *   or whenever simulation terminates abnormally.
  */
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
   // parse command line arguments
   // if we do not get required command line arguments, print usage
   // and exit immediately.
-  if ( (argc != 3) and (argc != 4) )
+  if ((argc != 3) and (argc != 4))
   {
     usage();
   }
@@ -90,23 +90,24 @@ int main(int argc, char** argv)
   }
 
   // instantiate a policy instance to use
-  SchedulingPolicy* policy;
+  SchedulingPolicy *policy;
 
   if (policyName == "FCFS")
   {
     policy = new FCFSSchedulingPolicy();
+  }
+  else if (policyName == "SPN")
+  {
+    policy = new SPNSchedulingPolicy();
   }
   /*  example of adding additional policies to the simulation
      else if (policyName == "RR")
      {
      policy = new RRSchedulingPolicy(quantum);
      }
-     else if (policyName == "SPN")
-     {
-     policy = new SPNSchedulingPolicy();
-     }
+     
    */
-  else  // unknwon/invalid scheduling policy specified
+  else // unknwon/invalid scheduling policy specified
   {
     cerr << "Error: Unknown scheduling policy: " << policyName << endl;
     cerr << "  current valid policies: FCFS" << endl;
@@ -114,7 +115,7 @@ int main(int argc, char** argv)
   }
 
   // create Scheduling System simulation
-  SchedulingSystem* sim = new SchedulingSystem(policy);
+  SchedulingSystem *sim = new SchedulingSystem(policy);
 
   // try and run the simulation, use verbose output so we can see whole system simulation
   // on standard output
@@ -131,7 +132,7 @@ int main(int argc, char** argv)
     }
     sim->runSimulation(verbose);
   }
-  catch (const SimulatorException& e)
+  catch (const SimulatorException &e)
   {
     cerr << "Simulation run resulted in runtime error occurring: " << endl;
     cerr << e.what() << endl;

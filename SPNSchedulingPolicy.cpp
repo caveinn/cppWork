@@ -16,7 +16,7 @@
  * whenever the cpu is idle, and the scheduling policy needs to make a
  * decision.
  */
-#include "SRTSchedulingPolicy.hpp"
+#include "SPNSchedulingPolicy.hpp"
 #include <vector>
 
 using namespace std;
@@ -29,7 +29,7 @@ using namespace std;
  * instance we are associated with, so we can call the paging system to get
  * needed information to make replacment decisions.
  */
-SRTSchedulingPolicy::SRTSchedulingPolicy()
+SPNSchedulingPolicy::SPNSchedulingPolicy()
     : SchedulingPolicy()
 {
   sys = NULL;
@@ -42,7 +42,7 @@ SRTSchedulingPolicy::SRTSchedulingPolicy()
  * Define a concrete destructor.  This destructor has no work to do, but
  * base classes that need a destructor should define their own.
  */
-SRTSchedulingPolicy::~SRTSchedulingPolicy()
+SPNSchedulingPolicy::~SPNSchedulingPolicy()
 {
 }
 
@@ -54,11 +54,12 @@ SRTSchedulingPolicy::~SRTSchedulingPolicy()
  * @param pid The process identifier (pid) of the newly arriving
  *   process that should now be managed by this policy.
  */
-void SRTSchedulingPolicy::newProcess(Pid id, Process *proc)
+void SPNSchedulingPolicy::newProcess(Pid id)
 {
   // put the new process on the end of the ready queue
-  struct srtProcess newProc;
-  newProc.process = *proc;
+  struct spnProcess newProc;
+   
+  newProc.process =  &sys->getProcessTable()[id];
   newProc.id = id;
   processVector.push_back(newProc);
 }
@@ -74,7 +75,7 @@ void SRTSchedulingPolicy::newProcess(Pid id, Process *proc)
  * @returns pid Returns the process identifier of the process
  *   we select to run next.
  */
-Pid SRTSchedulingPolicy::dispatch()
+Pid SPNSchedulingPolicy::dispatch()
 {
   // make sure the ready queue is not empty, if it is we
   // can't dispatch at this time
@@ -85,17 +86,17 @@ Pid SRTSchedulingPolicy::dispatch()
   // otherwise pop the front item and return it
   else
   {
-    Pid nextId = NULL;
-    int shortestTime = numeric_limits<int>::max(); //set to maximum to allow comparison
+    Pid nextId = -1; // set to first and change to 
+    int shortestTime = 10000000; //set to big number to allow comparison
     for (auto i : processVector)
     {
-      if (i.process.startTime = NOT_STARTED && i.process.startTime < shortestTime)
+      if (i.process->startTime == NOT_STARTED && i.process->serviceTime < shortestTime)
       {
         nextId = i.id;
-        shortestTime = i.process.serviceTime;
+        shortestTime = i.process->serviceTime;
       }
     }
-    if (nextId != NULL)
+    if(nextId != -1)
       return nextId;
     return IDLE;
   }
@@ -112,7 +113,7 @@ Pid SRTSchedulingPolicy::dispatch()
  * @returns bool Always returns false to indicate FCFS never
  *   preempts.
  */
-bool SRTSchedulingPolicy::preempt()
+bool SPNSchedulingPolicy::preempt()
 {
   return false;
 }
@@ -123,11 +124,11 @@ bool SRTSchedulingPolicy::preempt()
  * we want to clear out the ready queue and make sure it is
  * empty to begin with.
  */
-void SRTSchedulingPolicy::resetPolicy()
+void SPNSchedulingPolicy::resetPolicy()
 {
   // make sure the queue is empty, swap a queue with a known
   // empty queue will free up the old queue and ensure we start
   // with an empty one.
-  vector<srtProcess> empty;
+  vector<spnProcess> empty;
   swap(processVector, empty);
 }

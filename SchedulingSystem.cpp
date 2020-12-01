@@ -21,12 +21,15 @@
  */
 #include "SchedulingSystem.hpp"
 #include "FCFSSchedulingPolicy.hpp"
+#include "SPNSchedulingPolicy.hpp"
 #include "SimulatorException.hpp"
 #include <climits>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <string>
+
 
 using namespace std;
 
@@ -512,7 +515,8 @@ void SchedulingSystem::checkProcessArrivals()
   {
     if (process[pid].arrivalTime == systemTime)
     {
-      policy->newProcess(pid);
+        policy->newProcess(pid);
+  
     }
   }
 }

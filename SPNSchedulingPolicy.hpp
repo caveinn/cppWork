@@ -6,13 +6,13 @@
  * @date   Fall 2019
  * @note   ide:  g++ 8.2.0 / GNU Make 4.2.1
  *
- * Header include file for our SRTSchedulingPolicy class.
+ * Header include file for our SPNSchedulingPolicy class.
  * This is a concrete child class implementation of a
  * SchedulingPolicy strategy.  This policy implements a
- * non-preemptive SRT
+ * non-preemptive SPN
  */
-#ifndef SRTSCHEDULING_POLICY_HPP
-#define SRTSCHEDULING_POLICY_HPP
+#ifndef SPNSCHEDULING_POLICY_HPP
+#define SPNSCHEDULING_POLICY_HPP
 
 #include "SchedulingSystem.hpp"
 #include <string>
@@ -29,9 +29,9 @@ using namespace std;
 ///   in this simulation.
 typedef int Pid;
 
-struct srtProcess {
+struct spnProcess {
   Pid id;
-  Process process;
+  Process* process;
 };
 
 
@@ -43,21 +43,21 @@ struct srtProcess {
  * a derived class of this API, and will expect it to implement the
  * interface defined by this abstract base class.
  */
-class SRTSchedulingPolicy : public SchedulingPolicy
+class SPNSchedulingPolicy : public SchedulingPolicy
 {
 private:
   /// @brief This keeps track of all  processes to ensure
   /// that we can compare their remaining time.
-  vector<srtProcess> processVector;
+  vector<spnProcess> processVector;
 
 public:
-  SRTSchedulingPolicy();
+  SPNSchedulingPolicy();
 
   // virtual function, concrete subclasses can override if needed
-  virtual ~SRTSchedulingPolicy();
+  virtual ~SPNSchedulingPolicy();
 
   // virtual functions, concrete subclasses must implement
-  void newProcess(Pid pid, Process* proc);
+  void newProcess(Pid pid);
   Pid dispatch();
   bool preempt();
   void resetPolicy();

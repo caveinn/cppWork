@@ -15,6 +15,7 @@
 #include "catch.hpp"
 #include "SchedulingSystem.hpp"
 #include "SimulatorException.hpp"
+#include "SPNSchedulingPolicy.hpp"
 
 using namespace std;
 
@@ -281,6 +282,43 @@ TEST_CASE("Test SchedulingSystem runSimulation()",
         "C    4    4    9    13   9    2.2500  \n"
         "D    6    5    13   18   12   2.4000  \n"
         "E    8    2    18   20   12   6.0000  \n"
+        );
+
+}
+
+
+/**
+ * @brief Test full runSimulation()
+ *   Make sure runSimulation() runs to completion
+ *   on SPN example.
+ */
+TEST_CASE("Test SPNscheduling runSimulation()",
+          "[Test SPNscheduling runSimulation()]")
+{
+  // a basic scheduling system simulator that defaults to using SPN
+  // scheduling policy
+  SPNSchedulingPolicy *spn = new  SPNSchedulingPolicy();
+  SchedulingSystem sim  = SchedulingSystem(spn);
+
+  // load a simulation process table from file
+  sim.loadProcessTable("simfiles/process-table-02.sim");
+
+  // run the simulation to completion with default SPN
+  // policy using the first process table simulation
+  sim.runSimulation(true);
+  CHECK(sim.isCpuIdle() );
+  CHECK(sim.allProcessesDone() );
+  CHECK(sim.getSystemTime() == 20);
+  CHECK(sim.finalSchedule() ==
+        "A  A  A  C  C  B  B  B  B  B  D  D  D  D  D  E  E  E  E  E  "
+        );
+  CHECK(sim.finalResultsTable() ==
+        "Name Arrv T_s  Strt End  T_r  T_r / T_s\n"
+        "A    0    3    0    3    3    1.0000  \n"
+        "B    1    5    5    10   9    1.8000  \n"
+        "C    3    2    3    5    2    1.0000  \n"
+        "D    9    5    10   15   6    1.2000  \n"
+        "E    12   5    15   20   8    1.6000  \n"
         );
 
 }
