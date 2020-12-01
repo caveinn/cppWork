@@ -548,7 +548,7 @@ void SchedulingSystem::dispatchCpuIfIdle()
   if (isCpuIdle())
   {
     cpu = policy->dispatch();
-    if (process[cpu].startTime != NOT_STARTED)
+    if (process[cpu].startTime == NOT_STARTED)
       process[cpu].startTime = getSystemTime();
   }
 }
@@ -597,8 +597,16 @@ void SchedulingSystem::checkProcessFinished()
   // If the process is finished you have to do the following:
   // a. record the endTime of the process
   // b. make sure you set the done flag of the process to no be true
-  // c. The cpu should not be IDLE because the process just
+  // c. The cpu should now be IDLE because the process just
   // finished.
+
+  if(! isCpuIdle()){
+    if(process[cpu].timeUsed >= process[cpu].serviceTime){
+      process[cpu].endTime = getSystemTime();
+      process[cpu].done = true;
+      cpu = IDLE;
+    }
+  }
 }
 
 /**
