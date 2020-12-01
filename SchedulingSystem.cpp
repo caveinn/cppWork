@@ -30,7 +30,6 @@
 
 using namespace std;
 
-
 /**
  * @brief SchedulingSystem default constructor
  *
@@ -57,7 +56,6 @@ SchedulingSystem::SchedulingSystem()
   resetSystem();
 }
 
-
 /**
  * @brief SchedulingSystem policy
  *
@@ -70,7 +68,7 @@ SchedulingSystem::SchedulingSystem()
  * @param policy A pointer to the policy that should be
  *   used by this simulation.
  */
-SchedulingSystem::SchedulingSystem(SchedulingPolicy* policy)
+SchedulingSystem::SchedulingSystem(SchedulingPolicy *policy)
 {
   // remember which policy we are tol to use for the simulations
   this->policy = policy;
@@ -85,7 +83,6 @@ SchedulingSystem::SchedulingSystem(SchedulingPolicy* policy)
   // make sure system is setup for a new simulation
   resetSystem();
 }
-
 
 /**
  * @brief SchedulingSystem destructor
@@ -108,7 +105,6 @@ SchedulingSystem::~SchedulingSystem()
   }
 }
 
-
 /**
  * @brief reset system simulation
  *
@@ -126,7 +122,6 @@ void SchedulingSystem::resetSystem()
   policy->resetPolicy();
 }
 
-
 /** @brief system time accessor
  *
  * Accessor method to get the current system time of the
@@ -137,9 +132,8 @@ void SchedulingSystem::resetSystem()
 int SchedulingSystem::getSystemTime() const
 {
   // implement this for task 1
-  return 0;
+  return systemTime;
 }
-
 
 /** @brief num processes accessor
  *
@@ -153,9 +147,8 @@ int SchedulingSystem::getSystemTime() const
 int SchedulingSystem::getNumProcesses() const
 {
   // implement this for task 1
-  return 0;
+  return numProcesses;
 }
-
 
 /** @brief cpu idle test
  *
@@ -169,9 +162,10 @@ bool SchedulingSystem::isCpuIdle() const
   // implement this for task 1
   // need to check the cpu member variable and determine it if
   // is IDLE or not.
-  return true;
+  if (cpu == IDLE)
+    return true;
+  return false;
 }
-
 
 /** @brief get running process
  *
@@ -188,7 +182,6 @@ string SchedulingSystem::getRunningProcessName() const
   return "IDLE";
 }
 
-
 /** @brief get process table
  *
  * Get a handle/pointer to the simulation process table. This
@@ -197,11 +190,10 @@ string SchedulingSystem::getRunningProcessName() const
  *
  * @returns Process* returns an array of Process objects.
  */
-Process* SchedulingSystem::getProcessTable() const
+Process *SchedulingSystem::getProcessTable() const
 {
   return process;
 }
-
 
 /** @brief check all processes done
  *
@@ -222,7 +214,6 @@ bool SchedulingSystem::allProcessesDone() const
   return true;
 }
 
-
 /** @brief final results table
  *
  * Calculate the final results and format as a table.
@@ -237,12 +228,18 @@ string SchedulingSystem::finalResultsTable() const
   stringstream out;
 
   // output a header first
-  out << setw(4) << left << "Name" << " "
-      << setw(4) << left << "Arrv" << " "
-      << setw(4) << left << "T_s" << " "
-      << setw(4) << left << "Strt" << " "
-      << setw(4) << left << "End" << " "
-      << setw(4) << left << "T_r" << " "
+  out << setw(4) << left << "Name"
+      << " "
+      << setw(4) << left << "Arrv"
+      << " "
+      << setw(4) << left << "T_s"
+      << " "
+      << setw(4) << left << "Strt"
+      << " "
+      << setw(4) << left << "End"
+      << " "
+      << setw(4) << left << "T_r"
+      << " "
       << setw(8) << left << "T_r / T_s" << endl;
 
   // stream the results table to the string stream
@@ -265,7 +262,6 @@ string SchedulingSystem::finalResultsTable() const
   return out.str();
 }
 
-
 /** @brief final schedule
  *
  * Return the resulting final schedule history we
@@ -278,7 +274,6 @@ string SchedulingSystem::finalSchedule() const
 {
   return schedule;
 }
-
 
 /**
  * @brief load process table from file
@@ -316,7 +311,7 @@ void SchedulingSystem::loadProcessTable(string simfilename)
 
   // determine the total number of processes in the table
   processfile >> numProcesses;
-  if ( (numProcesses < 0) or (numProcesses > MAX_PROCESSES) )
+  if ((numProcesses < 0) or (numProcesses > MAX_PROCESSES))
   {
     stringstream msg;
     msg << "<SchedulingSystem::loadPageStream> Invalid number of processes"
@@ -335,12 +330,10 @@ void SchedulingSystem::loadProcessTable(string simfilename)
 
   // load the simulated process table into our process array
   int pid = 0;
-  while ( (not processfile.eof()) and (pid < numProcesses))
+  while ((not processfile.eof()) and (pid < numProcesses))
   {
     // load the process information
-    processfile >> process[pid].name
-    >> process[pid].arrivalTime
-    >> process[pid].serviceTime;
+    processfile >> process[pid].name >> process[pid].arrivalTime >> process[pid].serviceTime;
 
     // initialize other variables to initial states
     process[pid].startTime = NOT_STARTED;
@@ -359,7 +352,7 @@ void SchedulingSystem::loadProcessTable(string simfilename)
   // final sanity check, if we didn't load in all processes or
   // if we didn't yet reach the end of the file as we were expecting
   // then throw an exception
-  if ( (pid != numProcesses) or (not processfile.eof()) )
+  if ((pid != numProcesses) or (not processfile.eof()))
   {
     stringstream msg;
     msg << "<SchedulingSystem::loadPageStream> Error, did not see expected"
@@ -374,7 +367,6 @@ void SchedulingSystem::loadProcessTable(string simfilename)
   // using new page stream and no old page references are in memory
   resetSystem();
 }
-
 
 /**
  * @brief generate random process table
@@ -431,7 +423,7 @@ void SchedulingSystem::generateRandomProcessTable(int numProcesses, double arriv
   {
     // check if a process arrives at the current time
     // r is a uniform random number from 0.0 to 1.0
-    double r = ((double) rand() / (INT_MAX));
+    double r = ((double)rand() / (INT_MAX));
     if (r < arrivalProbability)
     {
       // the name of the process
@@ -466,7 +458,6 @@ void SchedulingSystem::generateRandomProcessTable(int numProcesses, double arriv
   resetSystem();
 }
 
-
 /** process table as string
  *
  * Return a representation of the simulated processes as a string.
@@ -497,7 +488,6 @@ string SchedulingSystem::processTableToString() const
   return out.str();
 }
 
-
 /**
  * @brief check new arrivals
  *
@@ -519,7 +509,6 @@ void SchedulingSystem::checkProcessArrivals()
     }
   }
 }
-
 
 /**
  * @brief dispatch cpu
@@ -551,7 +540,6 @@ void SchedulingSystem::dispatchCpuIfIdle()
   // time running or not.
 }
 
-
 /**
  * @brief simulate cpu cycle
  *
@@ -577,7 +565,6 @@ void SchedulingSystem::simulateCpuCycle()
   }
 }
 
-
 /**
  * @brief check process finished
  *
@@ -600,7 +587,6 @@ void SchedulingSystem::checkProcessFinished()
   // c. The cpu should not be IDLE because the process just
   // finished.
 }
-
 
 /**
  * @brief process preemption
@@ -632,7 +618,6 @@ void SchedulingSystem::checkProcessPreemption()
   }
 }
 
-
 /**
  * @brief run simulation
  *
@@ -655,7 +640,7 @@ void SchedulingSystem::runSimulation(bool verbose)
 {
   // check that a process table is loaded and ready to
   // simulate first before beginning
-  if ( (numProcesses <= 0) or (process == NULL) )
+  if ((numProcesses <= 0) or (process == NULL))
   {
     stringstream msg;
     msg << "<SchedulingSystem::runSimulation> Error, you must load or"
@@ -687,7 +672,6 @@ void SchedulingSystem::runSimulation(bool verbose)
 
     // determine if process has finished
     checkProcessFinished();
-
   }
 
   // Display scheduling simulation results if asked too
@@ -699,10 +683,10 @@ void SchedulingSystem::runSimulation(bool verbose)
       cout << setw(2) << left << time << " ";
     }
     cout << endl;
-    cout << "  " << finalSchedule() << endl << endl;
+    cout << "  " << finalSchedule() << endl
+         << endl;
 
     // display final job statistics as a table
     cout << finalResultsTable() << endl;
   }
-
 }
